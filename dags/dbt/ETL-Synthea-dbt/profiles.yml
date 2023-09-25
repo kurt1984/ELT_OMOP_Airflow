@@ -1,0 +1,6 @@
+etl_synthea_dbt:
+  target: omop
+  outputs:
+    omop:
+      type: duckdb
+      path: 'dbt.duckdb'

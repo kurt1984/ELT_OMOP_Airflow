@@ -1,0 +1,28 @@
+---
+title: "OMOP-CDM patient report"
+format:
+  html
+---
+
+For a demonstration of a histogram of year of birth on OMOP-CDM patient table, 
+
+```{python}
+
+import duckdb
+import os
+import pandas as pd
+import plotly.express as px
+import plotly.io as pio
+
+DBT_PROJECT_PATH = f"{os.environ['AIRFLOW_HOME']}/dags/dbt/ETL-Synthea-dbt"
+
+con = duckdb.connect(f'{DBT_PROJECT_PATH}/dbt.duckdb')
+person = con.table("person").to_df()
+
+person["year_of_birth"] = person["year_of_birth"].astype(int)
+
+fig = px.histogram(person, x="year_of_birth")
+fig.show()
+con.close()
+ 
+```
