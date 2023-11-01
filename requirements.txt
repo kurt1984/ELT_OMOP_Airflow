@@ -1,7 +1,7 @@
 # Astro Runtime includes the following pre-installed providers packages: https://docs.astronomer.io/astro/runtime-image-architecture#provider-packages
 astronomer-cosmos==1.0.4
 astro-sdk-python==1.6.1
-duckdb
+duckdb == 0.8.1
 pendulum
 numpy
 matplotlib
@@ -9,3 +9,5 @@ jupyter
 ipykernel
 ipywidgets
 plotly
+great_expectations
+airflow-provider-great-expectations #==0.2.7

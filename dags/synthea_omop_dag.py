@@ -16,9 +16,14 @@ import duckdb
 from pendulum import datetime
 import matplotlib.pyplot as plt
 import numpy as np
+from great_expectations_provider.operators.great_expectations import (
+    GreatExpectationsOperator,
+)
 
 
 task_logger = logging.getLogger("airflow.task")
+
+MY_GX_DATA_CONTEXT = "include/gx"
 
 
 CONNECTION_ID = "db_conn"
@@ -54,6 +59,19 @@ execution_config = ExecutionConfig(
 )
 def synthea_omop_dag():
 
+    gx_validate_csv = GreatExpectationsOperator(
+        task_id="gx_validate_csv",
+        #conn_id=POSTGRES_CONN_ID,
+        data_context_root_dir=MY_GX_DATA_CONTEXT,
+        #schema=MY_POSTGRES_SCHEMA,
+        #data_asset_name="synthea_table",
+        expectation_suite_name="my_expectation_suite",
+        checkpoint_name = "my_checkpoint",
+        return_json_dict=True,
+    )
+
+
+
     @task(task_id="load_csv_to_duckdb")
     def load_csv_to_duckdb():
 
@@ -87,12 +105,12 @@ def synthea_omop_dag():
         }
     )
  
-    make_quarto_report = BashOperator(
-    task_id="make_quarto_report",
-    bash_command=f"quarto render {os.environ['AIRFLOW_HOME']}/report/hello.qmd  --to html")
+    # make_quarto_report = BashOperator(
+    # task_id="make_quarto_report",
+    # bash_command=f"quarto render {os.environ['AIRFLOW_HOME']}/report/hello.qmd  --to html")
 
     
-    load_csv_to_duckdb_task >> dbt_tg >> make_quarto_report
+    gx_validate_csv >> load_csv_to_duckdb_task >> dbt_tg
  
 
 
